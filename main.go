@@ -8,18 +8,20 @@ import (
 	"net/http"
 	"os"
 	"time"
-
+    "bytes"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/satori/go.uuid"
-
+    
 	"gopkg.in/mcuadros/go-syslog.v2"
+    "gopkg.in/mcuadros/go-syslog.v2/format"
 )
 
 var port = os.Getenv("PORT")
 var logGroupName = os.Getenv("LOG_GROUP_NAME")
-var streamName = uuid.NewV4().String()
+var streamName, err = uuid.NewV4()
+    
 var sequenceToken = ""
 
 var (
@@ -66,7 +68,7 @@ func main() {
 	server.Wait()
 }
 
-func sendToCloudWatch(logPart syslog.LogParts) {
+func sendToCloudWatch(logPart format.LogParts) {
 	// service is defined at run time to avoid session expiry in long running processes
 	var svc = cloudwatchlogs.New(session.New())
 	// set the AWS SDK to use our bundled certs for the minimal container (certs from CoreOS linux)
@@ -75,12 +77,12 @@ func sendToCloudWatch(logPart syslog.LogParts) {
 	params := &cloudwatchlogs.PutLogEventsInput{
 		LogEvents: []*cloudwatchlogs.InputLogEvent{
 			{
-				Message:   aws.String(logPart["content"].(string)),
+				Message:   aws.String(formatMessageContent(logPart)),
 				Timestamp: aws.Int64(makeMilliTimestamp(logPart["timestamp"].(time.Time))),
 			},
 		},
 		LogGroupName:  aws.String(logGroupName),
-		LogStreamName: aws.String(streamName),
+		LogStreamName: aws.String(streamName.String()),
 	}
 
 	// first request has no SequenceToken - in all subsequent request we set it
@@ -104,7 +106,7 @@ func initCloudWatchStream() {
 
 	_, err := svc.CreateLogStream(&cloudwatchlogs.CreateLogStreamInput{
 		LogGroupName:  aws.String(logGroupName),
-		LogStreamName: aws.String(streamName),
+		LogStreamName: aws.String(streamName.String()),
 	})
 
 	if err != nil {
@@ -114,6 +116,34 @@ func initCloudWatchStream() {
 	log.Println("Created CloudWatch Logs stream:", streamName)
 }
 
+
 func makeMilliTimestamp(input time.Time) int64 {
 	return input.UnixNano() / int64(time.Millisecond)
+}
+
+//Receives the logParts map and returns the string message in format <hostname> <tag/app_name> [<proc_id>]: <content>
+func formatMessageContent(message format.LogParts) string {
+    var buffer bytes.Buffer
+    if message["hostname"] != nil &&  message["hostname"] != " " && message["hostname"] != "" {
+        buffer.WriteString(message["hostname"].(string))
+        buffer.WriteString(" ")
+    }
+    if message["tag"] != nil &&  message["tag"] != " " &&  message["tag"] != "" {
+        buffer.WriteString(message["tag"].(string))
+    } else if message["app_name"] != nil && message["app_name"] != " " && message["app_name"] != "" {
+        buffer.WriteString(message["app_name"].(string))
+    } else {
+        buffer.WriteString("-")
+    }
+    buffer.WriteString(" ")
+    if message["proc_id"] != nil && message["proc_id"] != " " && message["proc_id"] != "" {
+        buffer.WriteString("[")
+        buffer.WriteString(message["proc_id"].(string))
+        buffer.WriteString("]:")
+        buffer.WriteString(" ")
+    }
+    if message["message"] != nil && message["message"] != " " && message["message"] != "" { 
+        buffer.WriteString(message["message"].(string))
+    }   
+    return buffer.String()
 }
