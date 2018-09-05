@@ -124,25 +124,25 @@ func makeMilliTimestamp(input time.Time) int64 {
 //Receives the logParts map and returns the string message in format <hostname> <tag/app_name> [<proc_id>]: <content>
 func formatMessageContent(message format.LogParts) string {
     var buffer bytes.Buffer
-    if message["hostname"] != nil &&  message["hostname"] != " " && message["hostname"] != "" {
+    if message["hostname"] != nil &&  message["hostname"] != " " {
         buffer.WriteString(message["hostname"].(string))
         buffer.WriteString(" ")
     }
-    if message["tag"] != nil &&  message["tag"] != " " &&  message["tag"] != "" {
+    if message["tag"] != nil &&  message["tag"] != " " {
         buffer.WriteString(message["tag"].(string))
-    } else if message["app_name"] != nil && message["app_name"] != " " && message["app_name"] != "" {
+    } else if message["app_name"] != nil && message["app_name"] != " " {
         buffer.WriteString(message["app_name"].(string))
     } else {
         buffer.WriteString("-")
     }
     buffer.WriteString(" ")
-    if message["proc_id"] != nil && message["proc_id"] != " " && message["proc_id"] != "" {
+    if message["proc_id"] != nil && message["proc_id"] != " " {
         buffer.WriteString("[")
         buffer.WriteString(message["proc_id"].(string))
         buffer.WriteString("]:")
         buffer.WriteString(" ")
     }
-    if message["message"] != nil && message["message"] != " " && message["message"] != "" { 
+    if message["message"] != nil && message["message"] != " " { 
         buffer.WriteString(message["message"].(string))
     }   
     return buffer.String()
