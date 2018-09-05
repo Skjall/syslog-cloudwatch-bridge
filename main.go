@@ -133,7 +133,7 @@ func formatMessageContent(message format.LogParts) string {
     } else {
         buffer.WriteString("-")
     }
-    if message["proc_id"] != nil && message["proc_id"] != " " {
+    if message["proc_id"] != nil && message["proc_id"] != " " && message["proc_id"] != "-" {
         buffer.WriteString("[")
         buffer.WriteString(message["proc_id"].(string))
         buffer.WriteString("]")
