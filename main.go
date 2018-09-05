@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/satori/go.uuid"
     
-	"gopkg.in/mcuadros/go-syslog.v2"
-    "gopkg.in/mcuadros/go-syslog.v2/format"
+	"gopkg.in/davaops/go-syslog.v3"
+    "gopkg.in/davaops/go-syslog.v3/format"
 )
 
 var port = os.Getenv("PORT")
@@ -128,20 +128,17 @@ func formatMessageContent(message format.LogParts) string {
         buffer.WriteString(message["hostname"].(string))
         buffer.WriteString(" ")
     }
-    if message["tag"] != nil &&  message["tag"] != " " {
-        buffer.WriteString(message["tag"].(string))
-    } else if message["app_name"] != nil && message["app_name"] != " " {
+    if message["app_name"] != nil && message["app_name"] != " " {
         buffer.WriteString(message["app_name"].(string))
     } else {
         buffer.WriteString("-")
     }
-    buffer.WriteString(" ")
     if message["proc_id"] != nil && message["proc_id"] != " " {
         buffer.WriteString("[")
         buffer.WriteString(message["proc_id"].(string))
-        buffer.WriteString("]:")
-        buffer.WriteString(" ")
+        buffer.WriteString("]")
     }
+    buffer.WriteString(": ")
     if message["message"] != nil && message["message"] != " " { 
         buffer.WriteString(message["message"].(string))
     }   
