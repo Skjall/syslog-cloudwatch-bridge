@@ -12,5 +12,5 @@ clean:
 	rm -f syslog-cloudwatch-bridge
 
 release: linux
-	docker build -t rjocoleman/syslog-cloudwatch-bridge .
-	docker push rjocoleman/syslog-cloudwatch-bridge
+	docker build -t skjall/syslog-cloudwatch-bridge .
+	docker push skjall/syslog-cloudwatch-bridge
