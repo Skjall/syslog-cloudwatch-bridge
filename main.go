@@ -39,7 +39,7 @@ func main() {
 		log.Fatal("LOG_GROUP_NAME must be specified")
 	}
 	if streamName == "" {
-		streamName = uuid.NewV4()
+		streamName, err = uuid.NewV4()
 	}
 
 	if port == "" {
