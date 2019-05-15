@@ -1,5 +1,5 @@
 app:
-  image: rjocoleman/syslog-cloudwatch-bridge
+  image: skjall/syslog-cloudwatch-bridge
   ports:
     - 5014:514
     - 5014:514/udp
