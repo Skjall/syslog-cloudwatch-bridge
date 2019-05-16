@@ -12,7 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/satori/go.uuid"
     
 	"gopkg.in/davaops/go-syslog.v3"
     "gopkg.in/davaops/go-syslog.v3/format"
