@@ -21,7 +21,6 @@ import (
 var port = os.Getenv("PORT")
 var logGroupName = os.Getenv("LOG_GROUP_NAME")
 var streamName = os.Getenv("LOG_STREAM_NAME")
-var err = ""
     
 var sequenceToken = ""
 
@@ -40,7 +39,8 @@ func main() {
 		log.Fatal("LOG_GROUP_NAME must be specified")
 	}
 	if streamName == "" {
-		streamName, err = uuid.NewV4()
+		var tempStreamName, err = uuid.NewV4()
+		streamName = tempStreamName
 	}
 
 	if port == "" {
