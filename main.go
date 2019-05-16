@@ -111,6 +111,9 @@ func initCloudWatchStream() {
 		LogStreamName: aws.String(streamName),
 	})
 
+	log.Println("Debug:", err)
+
+	
 	if err != nil {
 		log.Fatal(err)
 	}
