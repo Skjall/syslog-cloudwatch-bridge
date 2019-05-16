@@ -40,7 +40,7 @@ func main() {
 	}
 	if streamName == "" {
 		var tempStreamName, err = uuid.NewV4()
-		streamName = tempStreamName
+		streamName = tempStreamName.String()
 	}
 
 	if port == "" {
@@ -86,7 +86,7 @@ func sendToCloudWatch(logPart format.LogParts) {
 			},
 		},
 		LogGroupName:  aws.String(logGroupName),
-		LogStreamName: aws.String(streamName.String()),
+		LogStreamName: aws.String(streamName),
 	}
 
 	// first request has no SequenceToken - in all subsequent request we set it
@@ -110,7 +110,7 @@ func initCloudWatchStream() {
 
 	_, err := svc.CreateLogStream(&cloudwatchlogs.CreateLogStreamInput{
 		LogGroupName:  aws.String(logGroupName),
-		LogStreamName: aws.String(streamName.String()),
+		LogStreamName: aws.String(streamName),
 	})
 
 	if err != nil {
