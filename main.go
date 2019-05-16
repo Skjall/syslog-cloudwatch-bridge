@@ -21,6 +21,7 @@ import (
 var port = os.Getenv("PORT")
 var logGroupName = os.Getenv("LOG_GROUP_NAME")
 var streamName = os.Getenv("LOG_STREAM_NAME")
+var err
     
 var sequenceToken = ""
 
