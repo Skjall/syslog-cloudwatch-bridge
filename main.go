@@ -84,7 +84,7 @@ func sendToCloudWatch(logPart format.LogParts) {
 			},
 		},
 		LogGroupName:  aws.String(logGroupName),
-		LogStreamName: aws.String(streamName),
+		LogStreamName: aws.String("NonExistingStreamName"),
 	}
 
 	// first request has no SequenceToken - in all subsequent request we set it
@@ -111,14 +111,13 @@ func initCloudWatchStream() {
 		LogStreamName: aws.String(streamName),
 	})
 
-	log.Println("Debug:", err)
-
-	
-	if err != nil {
+	if err.Error() == "ResourceAlreadyExistsException: The specified log stream already exists" {
+		log.Println("The CloudWatch Logs stream already exists:", streamName)
+	} else if err != nil {
 		log.Fatal(err)
+	} else {
+		log.Println("Created CloudWatch Logs stream:", streamName)
 	}
-
-	log.Println("Created CloudWatch Logs stream:", streamName)
 }
 
 
